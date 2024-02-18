@@ -7,16 +7,17 @@ async function deleteTaskById(c: Context) {
   const idToDelete = c.req.param('id');
   await tasksService.deleteTaskById(c, idToDelete);
 
-  c.status(204);
-  return c.body('');
+  return new Response(null, { status: 204 });
 }
 
 async function createNewTask(c: Context) {
   const formData = await c.req.parseBody();
 
-  const newTaskData: Omit<Task, 'id'> = TaskSchema.omit({id: true}).parse(formData);
+  const newTaskData: Omit<Task, 'id'> = TaskSchema.omit({ id: true }).parse(
+    formData
+  );
 
-  tasksService.createTask(c, newTaskData);
+  await tasksService.createTask(c, newTaskData);
 
   return c.redirect('/tasks/dashboard');
 }
@@ -25,8 +26,10 @@ async function updateTaskById(c: Context) {
   const idToUpdate = c.req.param('id');
   const formData = await c.req.parseBody();
 
-  const updatedTaskData: Omit<Task, 'id'> = TaskSchema.omit({id: true}).parse(formData);
-  
+  const updatedTaskData: Omit<Task, 'id'> = TaskSchema.omit({ id: true }).parse(
+    formData
+  );
+
   await tasksService.updateTask(c, idToUpdate, updatedTaskData);
 
   return c.render(<SuccesfulEdit />);
